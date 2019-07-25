@@ -18,6 +18,8 @@ import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 
+
+
 interface TodosProps {
   auth: Auth
   history: History
@@ -37,7 +39,9 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTodoName: event.target.value })
+    this.setState({ newTodoName: event.target.value, 
+     })
+
   }
 
   onEditButtonClick = (todoId: string) => {
@@ -52,12 +56,14 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         name: this.state.newTodoName,
         dueDate
       })
+      const newTodos = await getTodos(this.props.auth.getIdToken())
       this.setState({
-        todos: [...this.state.todos, newTodo],
-        newTodoName: ''
+        todos: newTodos,
+        newTodoName: '',
+        loadingTodos: false
       })
     } catch(err) {
-      alert('Todo creation failed  ' + err.message)
+     //alert('Todo creation failed  ' + err.message)
     }
   }
 
@@ -86,15 +92,17 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         })
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Todo update failed')
     }
   }
 
   async componentDidMount() {
     try {
       const todos = await getTodos(this.props.auth.getIdToken())
+      
       this.setState({
         todos,
+        newTodoName: '',
         loadingTodos: false
       })
     } catch (e) {
