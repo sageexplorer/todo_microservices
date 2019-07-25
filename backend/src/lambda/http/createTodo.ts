@@ -12,29 +12,13 @@ const uuidv1 = require('uuid/v1');
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
-  console.log('MY TO DO IS', newTodo.name)
- 
-  
+   console.log('MY TO DO IS', newTodo.name)
+   const todoId = uuidv1()
+   const userId = getUserId(event)
+   const dueDate = newTodo.dueDate
+   const name = newTodo.name
 
-  const todoId = uuidv1()
-  const userId = getUserId(event)
-
-  const newItem = {
-    userId,
-    todoId,
-    dueDate: newTodo.dueDate,
-    name: newTodo.name,
-
-    ...newTodo
-  }
-
-  // TODO: Implement creating a new TODO item
-  await docClient.put({
-    TableName: 'TodosTable',
-    Item: newItem
-  }).promise()
-
-
+  const newItem = await createNewData(todoId, userId, dueDate, name)
   return {
     statusCode: 201,
     headers: {
@@ -42,8 +26,30 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
      },
     body: JSON.stringify({
-     newItem
+      newTodo: newItem
     })
   }
 
 }
+async function createNewData(todoId: string, userId: string, dueDate: any, name: string ){
+
+  const  newTodo = {
+    todoId,
+    userId,
+    dueDate,
+    name, 
+    done: false 
+  }
+
+  await docClient
+  .put({
+    TableName: 'TodosTable',
+    Item: newTodo
+  })
+  .promise()
+
+ return newTodo 
+}
+
+
+
