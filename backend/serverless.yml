@@ -112,3 +112,10 @@ resources:
               KeyType: HASH
             Projection:
               ProjectionType: ALL
+              - IndexName: "todoid"
+            KeySchema:
+            - AttributeName: todoId
+              KeyType: HASH
+            Projection:
+              ProjectionType: ALL      
+              
