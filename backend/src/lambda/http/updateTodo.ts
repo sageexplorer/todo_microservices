@@ -7,29 +7,29 @@ import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } f
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const todoId = event.pathParameters.todoId
   const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
-  const parseBody = (event["queryStringParameters"])
+  const todoId = event.pathParameters.todoId
 
-  var dd = parseBody["dueDate"].toLowerCase() == 'true' ? true : false;   //change to boolean 
-  var params = {
-    TableName: 'TodosTable',
-    key: {
-      "name": parseBody["name"],
-      "dueDate": dd,
-      },
+    const name = updatedTodo["name"]
+    const dueDate  = updatedTodo["dueDate"]
+    const done = updatedTodo["done"]
+    
+  
+    const result = await docClient.update({
+     TableName: 'TodosTable',
+     Key: {
+        "name": name,
+        "dueDate": dueDate
+    },
     UpdateExpression:  "set done = :d",
     ExpressionAttributeValues:{
-      ":d":dd,
-  },
-   ReturnValues:"UPDATED_NEW"
-  }
+       ":d": done,
+   
+   },
+       
+   }).promise()
 
-  await docClient.put({
-    TableName: 'TodosTable',
-    Item: params
-  }).promise()
-
+  const items = await result 
   return {
     statusCode: 200,
     headers: {
@@ -37,7 +37,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-     params 
+     items: items 
     })
   }
 
