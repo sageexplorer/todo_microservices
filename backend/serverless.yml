@@ -17,6 +17,11 @@ provider:
       Action:
         - dynamodb:*
       Resource: "*"
+    - Effect: "Allow"  
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "*"    
 
   environment:
     TODOS_TABLE: Todos
