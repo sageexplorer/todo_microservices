@@ -63,7 +63,7 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
    if (!authHeader.toLowerCase().startsWith('bearer '))
       throw new Error('Invalid authentication header')
   
-      return await verify(token, secret, { algorithms: ['RS256'] }) as JwtPayload
+   return await verify(token, secret, { algorithms: ['RS256'] }) as JwtPayload
 
 }
 
