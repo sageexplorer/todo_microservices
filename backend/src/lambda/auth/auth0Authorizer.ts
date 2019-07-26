@@ -54,9 +54,17 @@ export const handler = async (
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)
   const jwt: Jwt = decode(token, { complete: true }) as Jwt
+  //Put secret here, or get it from KMS 
+  let secret = ''
 
-  // TODO: Implement token verification
-  return undefined
+   if (!authHeader)
+      throw new Error('No authentication header')
+
+   if (!authHeader.toLowerCase().startsWith('bearer '))
+      throw new Error('Invalid authentication header')
+  
+      return await verify(token, secret, { algorithms: ['RS256'] }) as JwtPayload
+
 }
 
 function getToken(authHeader: string): string {
