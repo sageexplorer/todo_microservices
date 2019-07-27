@@ -48,11 +48,11 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
-  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+ onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
 
-      const newTodo = await createTodo(this.props.auth.getIdToken(), {
+       await createTodo(this.props.auth.getIdToken(), {
         name: this.state.newTodoName,
         dueDate
       })
@@ -63,7 +63,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         loadingTodos: false
       })
     } catch(err) {
-     //alert('Todo creation failed  ' + err.message)
+     alert('Todo creation failed  ' + err.message)
     }
   }
 
