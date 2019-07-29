@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
 
 provider:
   name: aws
@@ -13,10 +14,6 @@ provider:
   region: ${opt:region, 'us-east-1'}
 
   iamRoleStatements:
-    # - Effect: "Allow"
-    #   Action:
-    #     - dynamodb:*
-    #   Resource: "*"
     - Effect: "Allow"  
       Action:
         - s3:PutObject
@@ -27,8 +24,7 @@ provider:
   environment:
     TODOS_TABLE: TodosTable
     IMAGES_S3_BUCKET: serverlesstodoapp
-    #AUTH_0_SECRET_ID: Auth0Secret-${self:provider.stage}
-    #AUTH_0_SECRET_FIELD: auth0Secret
+
 
 custom:
   documentation:
@@ -60,10 +56,8 @@ functions:
       - Effect: Allow
         Action:
          - dynamodb:Query
-        #Resource: arn:aws:dynamodb:${self:provider.region}:*:table/TodosTable          
-        Resource: "*"  
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}*
           
-
 
  
   CreateTodo:
@@ -85,8 +79,8 @@ functions:
         Action:
           - dynamodb:Query
           - dynamodb:PutItem
-        #Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}          
-        Resource: "*"
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}*
+          
 
   UpdateTodo:
     handler: src/lambda/http/updateTodo.handler
@@ -101,8 +95,7 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:UpdateItem
-        #Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}          
-        Resource: "*"      
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}*      
 
 
   DeleteTodo:
@@ -118,8 +111,7 @@ functions:
         Action:
           - dynamodb:Query
           - dynamodb:DeleteItem
-        #Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}          
-        Resource: "*"     
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}*   
 
   
   GenerateUploadUrl:
