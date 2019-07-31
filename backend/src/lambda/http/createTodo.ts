@@ -5,6 +5,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } f
 
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { getUserId} from '../utils'
+import { s3KeyNormalizer } from 'middy/middlewares';
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const uuidv1 = require('uuid/v1');
@@ -12,13 +13,15 @@ const uuidv1 = require('uuid/v1');
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
-   console.log('MY TO DO IS', newTodo.name)
    const todoId = uuidv1()
    const userId = getUserId(event)
    const dueDate = newTodo.dueDate
    const name = newTodo.name
+   const attachmentUrl = `${s3_bucket_name}.s3.amazonaws.com/${todoId}`
 
-  const newItem = await createNewData(todoId, userId, dueDate, name)
+  
+
+  const newItem = await createNewTodo(todoId, userId, dueDate, name, attachmentUrl)
   return {
     statusCode: 201,
     headers: {
@@ -29,16 +32,19 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       newTodo: newItem
     })
   }
-
 }
-async function createNewData(todoId: string, userId: string, dueDate: any, name: string ){
 
+async function createNewTodo(todoId: string, userId: string, dueDate: any, name: string, attachmentUrl:string){
+
+  
   const  newTodo = {
     todoId,
     userId,
+    createdAt: new Date().toISOString(), 
     dueDate,
     name, 
-    done: false 
+    done: false,
+    attachmentUrl
   }
 
   await docClient
@@ -50,6 +56,3 @@ async function createNewData(todoId: string, userId: string, dueDate: any, name:
 
  return newTodo 
 }
-
-
-
