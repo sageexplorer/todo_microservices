@@ -48,7 +48,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
- onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
 
@@ -95,6 +95,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       alert('Todo update failed')
     }
   }
+
+  
 
   async componentDidMount() {
     try {
@@ -165,6 +167,10 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
+  addDefaultSrc(ev:any){
+    ev.target.src = ''
+  }
+
   renderTodosList() {
     return (
       
@@ -203,7 +209,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 </Button>
               </Grid.Column>
               {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
+                <Image onError={this.addDefaultSrc} src={todo.attachmentUrl} size="small" wrapped />
               )}
               <Grid.Column width={16}>
                 <Divider />
